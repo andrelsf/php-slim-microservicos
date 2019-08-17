@@ -46,7 +46,7 @@ class UserEntity
         $this->nome = $nome;
     }
 
-    public function getCPF()
+    public function getBairro()
     {
         return $this->cpf;
     }
