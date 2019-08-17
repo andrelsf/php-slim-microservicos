@@ -17,79 +17,79 @@ class UserEntity
      * @Id @column(type="integer")
      * @GeneratedValue
      */
-    protected $user_id;
+    public $user_id;
 
     /**
      * @var string
      * @column(type="string", nullable=false)
      */
-    protected $nome;
+    public $nome;
     
     /**
-     * @var int
-     * @column(type="integer", unique=true, nullable=false, length=12)
+     * @var string
+     * @column(type="string", unique=true, nullable=false, length=11)
      */
-    protected $cpf;
+    public $cpf;
 
     /**
      * @var string
      * @column(type="string", nullable=false)
      */
-    protected $telefone;
+    public $telefone;
 
     /**
      * @var string
      * @column(type="string", unique=true, nullable=false)
      */
-    protected $email;
+    public $email;
 
     /**
      * @var string
      * @column(type="datetime", nullable=false)
      */
-    protected $data_nascimento;
+    public $data_nascimento;
 
     /**
      * @var string
      * @column(type="string", nullable=false)
      */
-    protected $senha;
+    public $senha;
 
     /**
      * @var string
      * @column(type="string", nullable=false)
      */
-    protected $rua;
+    public $rua;
     
     /**
      * @var string
      * @column(type="string", nullable=false)
      */
-    protected $cidade;
+    public $cidade;
     
     /**
      * @var string
      * @column(type="string", nullable=false)
      */
-    protected $estado;
+    public $estado;
     
     /**
      * @var int
      * @column(type="integer", nullable=false)
      */
-    protected $numero;
+    public $numero;
 
     /**
      * @var string
      * @column(type="string", nullable=false)
      */
-    protected $bairro;
+    public $bairro;
     
     /**
      * @var string
      * @column(type="string", nullable=true)
      */
-    protected $complemento;
+    public $complemento;
 
     public function getUserId()
     {
@@ -105,7 +105,7 @@ class UserEntity
     {
         if (!$nome && !is_string($nome)) {
             throw new \InvalidArgumentException(
-                "User name is required", 400
+                "nome is required", 400
             );
         }
         $this->nome = $nome;
@@ -119,7 +119,7 @@ class UserEntity
 
     public function setCPF($cpf)
     {
-        if (!$cpf && !is_int($cpf)) {
+        if (!$cpf && !is_string($cpf)) {
             throw new \InvalidArgumentException(
                 "CPF is required", 400
             );
@@ -288,7 +288,7 @@ class UserEntity
         return $this;
     }
 
-    private function verify_field($field) {
+    public function verify_field($field) {
         if (!$field && !is_string($field)) {
             throw new \InvalidArgumentException(
                 "Field is required", 400

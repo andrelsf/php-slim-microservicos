@@ -1,9 +1,8 @@
 <?php
 
+use App\Models\Entity\UserEntity;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-
-use App\Models\Entity\UserEntity;
 use Doctrine\ORM\EntityManager;
 
 # Carrega a API
@@ -46,8 +45,35 @@ $app->get('/api/users', function (Request $request, Response $response, $args) {
  * /api/registry
  */
 $app->post('/api/registry', function (Request $request, Response $response, $args) {
+    $params = (object) $request->getParams();
+    $entityManager = $this->get(EntityManager::class);
+    $user = (new UserEntity())->setNome($params->nome)
+                    ->setEmail($params->email)
+                    ->setCPF((int)$params->cpf)
+                    ->setTelefone($params->telefone)
+                    ->setDataNascimento(
+                        DateTime::createFromFormat(
+                            "Y-m-d", $params->data_nascimento
+                        )
+                    )
+                    ->setSenha(generate_password($params->senha))
+                    ->setRua($params->rua)
+                    ->setNumero($params->numero)
+                    ->setBairro($params->bairro)
+                    ->setCidade($params->cidade)
+                    ->setEstado($params->estado)
+                    ->setComplemento($params->complemento);
+    /**
+     * Persiste no banco
+     */
+    try {
+        $entityManager->persist($user);
+        $entityManager->flush();
+    } catch (Exception $e) {
+        throw new \Exception("Falha ao registrar o novo usuario!", 400);
+    }
     $return = $response->withJson(
-        ['status' => 'success', 'message' => 'pong'], 200
+        ['status' => 'success', 'message' => 'User registred!'], 200
     )->withHeader('Content-type', 'application/json');
     return $return;
 });
@@ -55,12 +81,17 @@ $app->post('/api/registry', function (Request $request, Response $response, $arg
 /**
  * 
  */
-$app->put('/api/user/{user_id}', function (Request $request, Response $response) use ($app) {
+$app->get('/api/user/{user_id}', function (Request $request, Response $response) use ($app) {
     $route = $request->getAttribute('route');
     $user_id = $route->getArgument('user_id');
-
+    $entityManager = $this->get(EntityManager::class);
+    $usersRepository = $entityManager->getRepository('App\Models\Entity\UserEntity');
+    $user = $usersRepository->find($user_id);
+    if (!$user) {
+        throw new \Exception("User not found.", 404);
+    }
     $return = $response->withJson(
-        ['status' => 'success', 'message' => "User ID: $user_id"], 200
+        ['status' => 'success', 'user' => $user], 200
     )->withHeader('Content-type', 'application/json');
     return $return;
 });
@@ -69,7 +100,7 @@ $app->put('/api/user/{user_id}', function (Request $request, Response $response)
  */
 $app->post('/api/login', function (Request $request, Response $response, $args) {
     $return = $response->withJson(
-        ['status' => 'success', 'message' => 'pong'], 200
+        ['status' => 'success', 'user' => 'pong'], 200
     )->withHeader('Content-type', 'application/json');
     return $return;
 });
