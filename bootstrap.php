@@ -9,44 +9,47 @@
 
 require './vendor/autoload.php';
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Cache\FilesystemCache;
+use Slim\Container;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use \Slim\App;
 
 /**
- * Container Resources
+ * Container Resources e adiciona as definições
  */
-$container = new \Slim\Container();
+$container = new Container(require __DIR__.'/settings.php');
 
-$isDevMode = true;
 
 /**
  * Diretório de entidades e Metadata do doctrine.
  */
-$config = Setup::createAnnotationMetadataConfiguration(
-    array(__DIR__."/src/Models/Entity"), $isDevMode
-);
+$container[EntityManager::class] = function (Container $container): EntityManager {
+    $config = Setup::createAnnotationMetadataConfiguration(
+        $container['settings']['doctrine']['metadata_dirs'],
+        $container['settings']['doctrine']['dev_mode']
+    );
 
-/**
- * Configuração da conexão com banco de dados MySQL.
- */
-$conn = array(
-    'driver' => 'pdo_mysql',
-    'host' => '172.17.0.2',
-    'port' => 3306,
-    'dbname' => 'users',
-    'user' => 'dbuser',
-    'password' => 'dbuser123'
-);
+    $config->setMetadataDriverImpl(
+        new AnnotationDriver(
+            new AnnotationReader,
+            $container['settings']['doctrine']['metadata_dirs']
+        )
+    );
 
-/**
- * Instrância do EntityManager
- */
-$entityManager = EntityManager::create($conn, $config);
+    $config->setMetadataCacheImpl(
+        new FilesystemCache(
+            $container['settings']['doctrine']['cache_dir']
+        )
+    );
 
-/**
- * Inseri a EntityManager no container com o nome [Entity Manager]
- */
-$container['em'] = $entityManager;
+    return EntityManager::create(
+        $container['settings']['doctrine']['connection'],
+        $config
+    );
+};
 
 /**
  * 
@@ -55,4 +58,4 @@ $container['em'] = $entityManager;
  * realizando a injeção de dependências dentro de um container.
  * 
  */
-$app = new \Slim\App;
+$app = new App($container);
