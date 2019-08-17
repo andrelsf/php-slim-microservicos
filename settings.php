@@ -20,7 +20,7 @@ return [
                 'port' => 3306,
                 'dbname' => 'users',
                 'user' => 'dbuser',
-                'password' => 'dbusers23',
+                'password' => 'dbuser123',
             ]
         ]
     ]

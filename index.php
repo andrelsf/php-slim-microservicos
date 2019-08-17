@@ -3,6 +3,9 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+use App\Models\Entity\UserEntity;
+use Doctrine\ORM\EntityManager;
+
 # Carrega a API
 require './bootstrap.php';
 
@@ -30,8 +33,11 @@ $app->get('/', function (Request $request, Response $response) use ($app) {
  * /api/users
  */
 $app->get('/api/users', function (Request $request, Response $response, $args) {
+    $entityManager = $this->get(EntityManager::class);
+    $usersRepository = $entityManager->getRepository('App\Models\Entity\UserEntity');
+    $users = $usersRepository->findAll();
     $return = $response->withJson(
-        ['status' => 'success', 'message' => 'pong'], 200
+        ['status' => 'success', 'users' => $users], 200
     )->withHeader('Content-type', 'application/json');
     return $return;
 });
