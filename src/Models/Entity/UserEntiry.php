@@ -1,39 +1,94 @@
 <?php
 
-namespace GEAPIUsers\UserEntity;
+namespace App\Models\Entity;
 
+/**
+ * @Entity @table(name="users")
+ */
 class UserEntity
 {
-    private $nome;
-    private $cpf;
-    private $telefone;
-    private $email;
-    private $data_nascimento;
-    private $senha;
-    private $rua;
-    private $cidade;
-    private $estado;
-    private $numero;
-    private $bairro;
-    private $complemento;
+    /**
+     * @var int
+     * @Id @column(type="integer")
+     * @GeneratedValue
+     */
+    protected $user_id;
 
-    public function __construct(
-        $nome, $cpf, $telefone, $email, $data_nascimento,
-        $senha, $rua, $cidade, $estado, $numero, $bairro, $complemento
-    )
+    /**
+     * @var string
+     * @column(type="string", nullable=false)
+     */
+    protected $nome;
+    
+    /**
+     * @var int
+     * @column(type="integer", unique=true, nullable=false, length=12)
+     */
+    protected $cpf;
+
+    /**
+     * @var string
+     * @column(type="string", nullable=false)
+     */
+    protected $telefone;
+
+    /**
+     * @var string
+     * @column(type="string", unique=true, nullable=false)
+     */
+    protected $email;
+
+    /**
+     * @var string
+     * @column(type="datetime", nullable=false)
+     */
+    protected $data_nascimento;
+
+    /**
+     * @var string
+     * @column(type="string", nullable=false)
+     */
+    protected $senha;
+
+    /**
+     * @var string
+     * @column(type="string", nullable=false)
+     */
+    protected $rua;
+    
+    /**
+     * @var string
+     * @column(type="string", nullable=false)
+     */
+    protected $cidade;
+    
+    /**
+     * @var string
+     * @column(type="string", nullable=false)
+     */
+    protected $estado;
+    
+    /**
+     * @var int
+     * @column(type="integer", nullable=false)
+     */
+    protected $numero;
+
+    /**
+     * @var string
+     * @column(type="string", nullable=false)
+     */
+    protected $bairro;
+    
+    /**
+     * @var string
+     * @column(type="string", nullable=true)
+     */
+    protected $complemento;
+
+    public function getUserId()
     {
-        $this->nome = $nome;
-        $this->cpf = $cpf;
-        $this->telefone = $telefone;
-        $this->email = $email;
-        $this->data_nascimento = $data_nascimento;
-        $this->senha = $senha;
-        $this->rua = $rua;
-        $this->cidade = $cidade;
-        $this->estado = $estado;
-        $this->numero = $numero;
-        $this->bairro = $bairro;
-        $this->complemento = $complemento;
+        return $this->user_id;
     }
 
     public function getNome()
@@ -46,7 +101,7 @@ class UserEntity
         $this->nome = $nome;
     }
 
-    public function getBairro()
+    public function getCPF()
     {
         return $this->cpf;
     }
@@ -56,5 +111,103 @@ class UserEntity
         $this->cpf = $cpf;
     }
     
-}
+    public function getTelefone()
+    {
+        return $this->telefone;
+    }
 
+    public function setTelefone($telefone)
+    {
+        $this->telefone = $telefone;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    public function getDataNascimento()
+    {
+        return $this->data_nascimento;
+    }
+
+    public function setDataNascimento($data_nascimento)
+    {
+        $this->data_nascimento = $data_nascimento;
+    }
+
+    public function getSenha()
+    {
+        return $this->senha;
+    }
+
+    public function setSenha($senha)
+    {
+        $this->senha = $senha;
+    }
+
+    public function getRua()
+    {
+        return $this->rua;
+    }
+
+    public function setRua($rua)
+    {
+        $this->rua = $rua;
+    }
+
+    public function getcidade()
+    {
+        return $this->cidade;
+    }
+
+    public function setCidade($cidade)
+    {
+        $this->cidade = $cidade;
+    }
+
+    public function getEstado()
+    {
+        return $this->estado;
+    }
+
+    public function setEstado($estado)
+    {
+        $this->estado = $estado;
+    }
+
+    public function getNumero()
+    {
+        return $this->numero;
+    }
+
+    public function setNumero($numero)
+    {
+        $this->numero = $numero;
+    }
+
+    public function getBairro()
+    {
+        return $this->bairro;
+    }
+
+    public function setBairro($bairro)
+    {
+        $this->bairro = $bairro;
+    }
+
+    public function getComplemento()
+    {
+        return $this->complemento;
+    }
+
+    public function setComplemento($complemento)
+    {
+        $this->complemento = $complemento;
+    }
+}
