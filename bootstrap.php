@@ -22,6 +22,20 @@ use \Slim\App;
  */
 $container = new Container(require __DIR__.'/settings.php');
 
+/**
+ * Manuzeio de exceções da API
+ * Retorna as exceptions e codigos de status via JSON
+ */
+$container['errorHandler'] = function ($c) {
+    return function ($request, $response, $exception) use ($c) {
+        $statusCode = $exception->getCode() ? $exception->getCode() : 500;
+        return $c['response']->withStatus($statusCode)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->withJson(
+                        ['message' => $exception->getMessage()], $statusCode
+                    );
+    };
+};
 
 /**
  * Diretório de entidades e Metadata do doctrine.

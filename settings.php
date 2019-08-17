@@ -1,7 +1,5 @@
 <?php
 
-// Settings for DOCTRINE
-
 define('APP_ROOT', __DIR__);
 
 return [

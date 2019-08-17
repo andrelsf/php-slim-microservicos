@@ -98,7 +98,13 @@ class UserEntity
 
     public function setNome($nome)
     {
+        if (!$nome && !is_string($nome)) {
+            throw new \InvalidArgumentException(
+                "User name is required", 400
+            );
+        }
         $this->nome = $nome;
+        return $this;
     }
 
     public function getCPF()
@@ -108,7 +114,13 @@ class UserEntity
 
     public function setCPF($cpf)
     {
+        if (!$cpf && !is_int($cpf)) {
+            throw new \InvalidArgumentException(
+                "CPF is required", 400
+            );
+        }
         $this->cpf = $cpf;
+        return $this;
     }
     
     public function getTelefone()
@@ -118,7 +130,13 @@ class UserEntity
 
     public function setTelefone($telefone)
     {
+        if (!$telefone && !is_string($telefone)) {
+            throw new \InvalidArgumentException(
+                "Telefone is required", 400
+            );
+        }
         $this->telefone = $telefone;
+        return $this;
     }
 
     public function getEmail()
@@ -128,7 +146,13 @@ class UserEntity
 
     public function setEmail($email)
     {
+        if (!$email && !is_string($email)) {
+            throw new \InvalidArgumentException(
+                "E-mail is required", 400
+            );
+        }
         $this->email = $email;
+        return $this;
     }
 
     public function getDataNascimento()
@@ -138,7 +162,13 @@ class UserEntity
 
     public function setDataNascimento($data_nascimento)
     {
+        if (!$data_nascimento) {
+            throw new \InvalidArgumentException(
+                "data_nascimento is required", 400
+            );
+        }
         $this->data_nascimento = $data_nascimento;
+        return $this;
     }
 
     public function getSenha()
@@ -148,7 +178,13 @@ class UserEntity
 
     public function setSenha($senha)
     {
+        if (!$senha && !is_string($senha)) {
+            throw new \InvalidArgumentException(
+                "senha is required", 400
+            );
+        }
         $this->senha = $senha;
+        return $this;
     }
 
     public function getRua()
@@ -158,7 +194,13 @@ class UserEntity
 
     public function setRua($rua)
     {
+        if (!$rua && !is_string($rua)) {
+            throw new \InvalidArgumentException(
+                "rua is required", 400
+            );
+        }
         $this->rua = $rua;
+        return $this;
     }
 
     public function getcidade()
@@ -168,7 +210,13 @@ class UserEntity
 
     public function setCidade($cidade)
     {
+        if (!$cidade && !is_string($cidade)) {
+            throw new \InvalidArgumentException(
+                "cidade is required", 400
+            );
+        }
         $this->cidade = $cidade;
+        return $this;
     }
 
     public function getEstado()
@@ -178,7 +226,13 @@ class UserEntity
 
     public function setEstado($estado)
     {
+        if (!$estado && !is_string($estado)) {
+            throw new \InvalidArgumentException(
+                "estado is required", 400
+            );
+        }
         $this->estado = $estado;
+        return $this;
     }
 
     public function getNumero()
@@ -188,7 +242,13 @@ class UserEntity
 
     public function setNumero($numero)
     {
+        if (!$numero && !is_int($numero)) {
+            throw new \InvalidArgumentException(
+                "numero is required", 400
+            );
+        }
         $this->numero = $numero;
+        return $this;
     }
 
     public function getBairro()
@@ -198,7 +258,13 @@ class UserEntity
 
     public function setBairro($bairro)
     {
+        if (!$bairro && !is_string($bairro)) {
+            throw new \InvalidArgumentException(
+                "bairro is required", 400
+            );
+        }
         $this->bairro = $bairro;
+        return $this;
     }
 
     public function getComplemento()
@@ -208,6 +274,21 @@ class UserEntity
 
     public function setComplemento($complemento)
     {
+        if (!$complemento && !is_string($complemento)) {
+            throw new \InvalidArgumentException(
+                "User name is required", 400
+            );
+        }
         $this->complemento = $complemento;
+        return $this;
+    }
+
+    private function verify_field($field) {
+        if (!$field && !is_string($field)) {
+            throw new \InvalidArgumentException(
+                "Field is required", 400
+            );
+        }
+        return true;
     }
 }

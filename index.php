@@ -52,6 +52,7 @@ $app->post('/api/registry', function (Request $request, Response $response, $arg
 $app->put('/api/user/{user_id}', function (Request $request, Response $response) use ($app) {
     $route = $request->getAttribute('route');
     $user_id = $route->getArgument('user_id');
+
     $return = $response->withJson(
         ['status' => 'success', 'message' => "User ID: $user_id"], 200
     )->withHeader('Content-type', 'application/json');
