@@ -17,7 +17,11 @@ require './bootstrap.php';
  */
 
  /**
- * / somente para retornar versão do app
+ * / 
+ * 
+ * somente para retornar versão do app
+ * 
+ * @request curl -X GET localhost:8080/
  */
 $app->get('/', function (Request $request, Response $response) use ($app) {
     $return = $response->withJson([
@@ -30,6 +34,10 @@ $app->get('/', function (Request $request, Response $response) use ($app) {
 
 /**
  * /api/users
+ * 
+ * Busca e retorna todos usuarios cadastrados no sistema
+ * 
+ * @request curl -X GET localhost:8080/api/users
  */
 $app->get('/api/users', function (Request $request, Response $response, $args) {
     $entityManager = $this->get(EntityManager::class);
@@ -43,6 +51,14 @@ $app->get('/api/users', function (Request $request, Response $response, $args) {
 
 /**
  * /api/registry
+ * 
+ * Registra um novo usuário no sistema valida CPF e EMAIL
+ * 
+ * @request curl -X POST -H "Content-Type: application/json" \
+ * -d '{"nome":"Andre Xavier","cpf":"1234567890","telefone":"62999999999",\
+ * "email":"andre@examplecoorp.com","data_nascimento":"1986-05-05","senha":"@admin",\
+ * "rua":"Sem Fim","cidade":"Jurema","estado":"GO","numero":999,"bairro":\
+ * "JD Cunha","complemento":""}' localhost:8080/api/registry
  */
 $app->post('/api/registry', function (Request $request, Response $response, $args) {
     $params = (object) $request->getParams();
@@ -73,13 +89,17 @@ $app->post('/api/registry', function (Request $request, Response $response, $arg
         throw new \Exception("Falha ao registrar o novo usuario!", 400);
     }
     $return = $response->withJson(
-        ['status' => 'success', 'message' => 'User registred!'], 200
+        ['status' => 'success', 'message' => 'User registred!'], 201
     )->withHeader('Content-type', 'application/json');
     return $return;
 });
 
 /**
+ * /api/user/{user_id}
  * 
+ * GET - Busca um unico usuário pelo ID
+ * 
+ * @request curl -X GET localhost:8080/api/user/1
  */
 $app->get('/api/user/{user_id}', function (Request $request, Response $response) use ($app) {
     $route = $request->getAttribute('route');
@@ -88,19 +108,101 @@ $app->get('/api/user/{user_id}', function (Request $request, Response $response)
     $usersRepository = $entityManager->getRepository('App\Models\Entity\UserEntity');
     $user = $usersRepository->find($user_id);
     if (!$user) {
-        throw new \Exception("User not found.", 404);
+        throw new \Exception("Usuario não encontrado.", 404);
     }
     $return = $response->withJson(
         ['status' => 'success', 'user' => $user], 200
     )->withHeader('Content-type', 'application/json');
     return $return;
 });
+
+/**
+ * /api/user/{user_id}
+ * 
+ * PUT - Atualiza os dados do usuário
+ * 
+ * Valida se usuário existe e atualiza os dados caso exista
+ * 
+ * @request curl -X PUT -H "Content-Type: application/json" \
+ * -d '{"nome":"Andre Xavier","cpf":"1234567890","telefone":"62999999999",\
+ * "email":"andre@examplecoorp.com","data_nascimento":"1986-05-05","senha":"@admin",\
+ * "rua":"Sem Fim","cidade":"Jurema","estado":"GO","numero":999,"bairro":\
+ * "JD Cunha","complemento":""}' localhost:8080/api/user/1
+ */
+$app->put('/api/user/{user_id}', function (Request $request, Response $response) use ($app) {
+    $params = (object) $request->getParams();
+    $route = $request->getAttribute('route');
+    $user_id = $route->getArgument('user_id');
+    $entityManager = $this->get(EntityManager::class);
+    $usersRepository = $entityManager->getRepository('App\Models\Entity\UserEntity');
+    $user = $usersRepository->find($user_id);
+    if (!$user) {
+        throw new \Exception("Usuário não encontrado, impossivel atualizar!.", 404);
+    }
+    /**
+     * Atualiza o usuário
+     */
+    $user->setNome($params->nome)
+        ->setEmail($params->email)
+        ->setCPF((int)$params->cpf)
+        ->setTelefone($params->telefone)
+        ->setDataNascimento(
+            DateTime::createFromFormat(
+                "Y-m-d", $params->data_nascimento
+            )
+        )
+        ->setSenha(generate_password($params->senha))
+        ->setRua($params->rua)
+        ->setNumero($params->numero)
+        ->setBairro($params->bairro)
+        ->setCidade($params->cidade)
+        ->setEstado($params->estado)
+        ->setComplemento($params->complemento);
+        try {
+            $entityManager->persist($user);
+            $entityManager->flush();
+        } catch (Exception $e) {
+            throw new \Exception([
+                'status' => 'fail',
+                'user_id' => $user_id, 
+                'message' => "Falha ao atualizar o usuario!"
+            ], 400);
+        }
+        $return = $response->withJson(
+            [
+              'status' => 'success', 
+              'user_id' => $user_id, 
+              'message' => 'User atualizado!'
+            ], 200
+        )->withHeader('Content-type', 'application/json');
+        return $return;
+});
+
 /**
  * /api/login
+ * 
+ * Realiza o login do usuário verificando EMAIL e SENHA
+ * 
+ * @request curl -X POST -H "Content-Type: application/json" \
+ * -d '{"email":"andre.ferreira@soluti.com.br","senha":"admin"}' localhost:8080/api/login
  */
 $app->post('/api/login', function (Request $request, Response $response, $args) {
+    $params = (object) $request->getParams();
+    $email_req = $params->email;
+    $senha_req = generate_password($params->senha);
+    $entityManager = $this->get(EntityManager::class);
+    $usersRepository = $entityManager->getRepository('App\Models\Entity\UserEntity');
+    $user = $usersRepository->findOneBy(['email' => $email_req]);
+    if (!$user) {
+        throw new \Exception("User not found.", 404);
+    } elseif (($user->email === $email_req) and ($user->senha === $senha_req)) {
+        $return = $response->withJson(
+            ['status' => 'success', 'message' => 'Usuario autenticado'], 200
+        )->withHeader('Content-type', 'application/json');
+        return $return;
+    }
     $return = $response->withJson(
-        ['status' => 'success', 'user' => 'pong'], 200
+        ['status' => 'fail', 'mensage' => 'Email ou senha incorretos'], 400
     )->withHeader('Content-type', 'application/json');
     return $return;
 });
