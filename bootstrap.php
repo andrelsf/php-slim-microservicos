@@ -9,6 +9,9 @@
 
 require './vendor/autoload.php';
 
+session_start();
+
+use App\Middleware\Auth;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\FilesystemCache;
 use Slim\Container;
@@ -16,6 +19,7 @@ use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use \Slim\App;
+use Slim\Views\PhpRenderer;
 
 /**
  * Container Resources e adiciona as definições
@@ -35,6 +39,14 @@ $container['errorHandler'] = function ($c) {
                         ['message' => $exception->getMessage()], $statusCode
                     );
     };
+};
+
+/**
+ * VIEW Renderer
+ */
+$container['renderer'] = function (Container $container) {
+    $settings = $container->get('settings')['renderer'];
+    return new PhpRenderer($settings['template_path']);
 };
 
 /**
@@ -63,6 +75,13 @@ $container[EntityManager::class] = function (Container $container): EntityManage
         $container['settings']['doctrine']['connection'],
         $config
     );
+};
+
+/**
+ * AUTH Middleware
+ */
+$container['Auth'] = function ($c) {
+    return new Auth($c->get('router'));
 };
 
 /**

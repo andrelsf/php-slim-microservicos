@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <title>GE</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+    <div class="container">
+            <div class="row">
+        <center><h2>Lista de Alunos </h2></center>
+        <h3><p> Realizar <a href="/api/logout">Logout</a></h3>
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Registro</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">CPF</th>
+                    <th scope="col">Email</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?= $content; ?>
+            <?php if(!empty($users)) : ?>
+            <?php foreach ($users as $user): ?>
+                <tr>
+                    <td scope="row"><?= $user->user_id ?></td>
+                    <td><?= $user->nome ?></td>
+                    <td><?= $user->cpf ?></td>
+                    <td><?= $user->email ?></td>
+                    <td><a href="/api/user/update/<?= $user->user_id ?>"><button type="button" class="btn btn-outline-danger btn-sm"/>Atualizar</button></a></td>
+                    <td><a href="/api/user/delete/<?= $user->user_id ?>"><button type="button" class="btn btn-outline-danger btn-sm"/>Excluir</button></a></td>
+                </tr>
+            <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+        </div>
+    </body>
+</html>

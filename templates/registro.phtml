@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <title>GE</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="text-center">
+                        <h2>Registro</h2>
+                    </div>
+                    <form action="/api/registry" method="POST">
+                        <div class="form-row">
+                            <div class="col-md-4 mb-3">
+                                <label for="nome">Nome</label>
+                                <input type="text" class="form-control" id="nome" name="nome" aria-describedby="nome" placeholder="nome" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="cpf">CPF</label>
+                                <input type="text" class="form-control" id="cpf" name="cpf" aria-describedby="cpf" placeholder="cpf" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-4 mb-3">
+                                <label for="telefone">Telefone</label>
+                                <input type="text" class="form-control" id="telefone" name="telefone" aria-describedby="telefone" placeholder="telefone" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-8 mb-3">
+                                <label for="email">Email</label>
+                                <input type="text" class="form-control" id="email" name="email" aria-describedby="email" placeholder="email" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3 mb-3">
+                                <label for="data_nascimento">Data Nascimento</label>
+                                <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" aria-describedby="data_nascimento" placeholder="data_nascimento" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="col-md-8 mb-3">
+                            <hr>
+                                <label for="rua">Rua</label>
+                                <input type="text" class="form-control" id="rua" name="rua" aria-describedby="rua" placeholder="rua" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                            <hr>
+                                <label for="numero">Número</label>
+                                <input type="number" class="form-control" id="numero" name="numero" aria-describedby="numero" placeholder="numero" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <label for="bairro">Bairro</label>
+                                <input type="text" class="form-control" id="bairro" name="bairro" aria-describedby="bairro" placeholder="bairro" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-5 mb-3">
+                                <label for="cidade">Cidade</label>
+                                <input type="text" class="form-control" id="cidade" name="cidade" aria-describedby="cidade" placeholder="cidade" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label for="estado">Estado</label>
+                                <input type="text" class="form-control" id="estado" name="estado" aria-describedby="estado" placeholder="estado" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-12 mb-3">
+                                <label for="complemento">Complemento</label>
+                                <input type="text" class="form-control" id="complemento" name="complemento" aria-describedby="complemento" placeholder="complemento">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-5 mb-3">
+                            <hr>
+                                <label for="senha">Senha</label>
+                                <input type="password" class="form-control" id="senha" name="senha" aria-describedby="senha" placeholder="senha" minlength="8" required>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="form-row">
+                            <div class="col-md-12 mb-3">
+                            <hr>
+                            <input type="submit" value="Registrar" class="btn btn-primary"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <title>GE</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <h2>Login</h2>
+                    </div>
+                    <form action="/api/login" method="POST">
+                        <div class="form-group">
+                            <label for="email">Emails</label>
+                            <input type="text" class="form-control" id="email" name="email" aria-describedby="email" placeholder="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="senha">Senha</label>
+                            <input type="password" class="form-control" id="senha" name="senha" aria-describedby="senha" placeholder="senha">
+                        </div>
+                            <br>
+                            <input type="submit" value="Salvar" class="btn btn-primary"/>
+                    </form>
+                    <hr>
+                    <div>
+                        <center>
+                        <h4><p> Realizar <a href="/registro">registro</a></h4>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

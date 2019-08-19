@@ -5,7 +5,10 @@ define('APP_ROOT', __DIR__);
 return [
     'settings' => [
         'displayErrorDetails' => true,
-        'determineRouteBeforeAppMiddleware' => false,
+        'determineRouteBeforeAppMiddleware' => true,
+        'renderer' => [
+            'template_path' => __DIR__.'/templates/'
+        ],
         'doctrine' => [
             // if true, metadata caching is forcefully disabled
             'dev_mode' => true,

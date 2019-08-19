@@ -1,0 +1,35 @@
+version: "3.7"
+
+volumes:
+  mysqldatas:
+
+networks:
+  db_net:
+
+services:
+  dbmysql:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    restart: on-failure
+    hostname: mysql-01
+    env_file: 
+      - ./mysql/.env
+    volumes: 
+      - ./mysql/.data:/var/lib/mysql
+    ports:
+      - 3306:3306
+  
+  apigility:
+    build:
+      context: ./apigility
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8080:80"
+    links:
+      - dbmysql
+    volumes:
+      - ./apigility:/var/www
+    depends_on:
+      - dbmysql

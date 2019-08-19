@@ -23,14 +23,26 @@ require './bootstrap.php';
  * 
  * @request curl -X GET localhost:8080/
  */
-$app->get('/', function (Request $request, Response $response) use ($app) {
-    $return = $response->withJson([
-        'status' => 'success',
-        'message' => 'GE API Users',
-        'version' => 'v1.0'
-    ], 200)->withHeader('Content-type', 'application/json');
-    return $return;
-});
+$app->get('/', function ($request, $response, $args) {
+    return $this->renderer->render($response, 'index.phtml', $args);
+})->setName('home');
+
+/**
+ * Pagina para registro
+ */
+$app->get('/registro', function ($request, $response, $args) {
+    return $this->renderer->render($response, 'registro.phtml', $args);
+})->setName('registro');
+
+/**
+ * Pagina dos usuários
+ */
+$app->get('/homeusers', function ($request, $response, $args) {
+    $entityManager = $this->get(EntityManager::class);
+    $usersRepository = $entityManager->getRepository('App\Models\Entity\UserEntity');
+    $users = $usersRepository->findAll();
+    return $this->renderer->render($response, 'homeUsers.phtml', ['users' => $users]);
+})->setName('homeUsers')->add('Auth');
 
 /**
  * /api/users
@@ -43,11 +55,11 @@ $app->get('/api/users', function (Request $request, Response $response, $args) {
     $entityManager = $this->get(EntityManager::class);
     $usersRepository = $entityManager->getRepository('App\Models\Entity\UserEntity');
     $users = $usersRepository->findAll();
-    $return = $response->withJson(
-        ['status' => 'success', 'users' => $users], 200
-    )->withHeader('Content-type', 'application/json');
-    return $return;
-});
+    // $return = $response->withJson(
+    //     ['status' => 'success', 'users' => $users], 200
+    // )->withHeader('Content-type', 'application/json');
+    return $users;
+})->setName('getAllUsers')->add('Auth');
 
 /**
  * /api/registry
@@ -88,10 +100,7 @@ $app->post('/api/registry', function (Request $request, Response $response, $arg
     } catch (Exception $e) {
         throw new \Exception("Falha ao registrar o novo usuario!", 400);
     }
-    $return = $response->withJson(
-        ['status' => 'success', 'message' => 'User registred!'], 201
-    )->withHeader('Content-type', 'application/json');
-    return $return;
+    return $response->withRedirect($this->router->pathFor('home'), 200);
 });
 
 /**
@@ -196,25 +205,27 @@ $app->post('/api/login', function (Request $request, Response $response, $args) 
     if (!$user) {
         throw new \Exception("User not found.", 404);
     } elseif (($user->email === $email_req) and ($user->senha === $senha_req)) {
-        $return = $response->withJson(
-            ['status' => 'success', 'message' => 'Usuario autenticado'], 200
-        )->withHeader('Content-type', 'application/json');
-        return $return;
+        $_SESSION['isLoggedIn'] = 'yes';
+        session_regenerate_id();
+        /**
+         * Login SUCCESS redirect to home page.
+         */
+        return $response->withRedirect($this->router->pathFor('homeUsers')); #TODO
     }
-    $return = $response->withJson(
-        ['status' => 'fail', 'mensage' => 'Email ou senha incorretos'], 400
-    )->withHeader('Content-type', 'application/json');
-    return $return;
-});
+    return $response->withRedirect($this->router->pathFor('home'), 403);
+})->setName('login');
 
 /**
  * /api/logout TODO
  */
-$app->get('/api/logout', function (Request $request, Response $response) use ($app) {
-    $return = $response->withJson(
-        ['status' => 'success', 'message' => 'pong'], 200
-    )->withHeader('Content-type', 'application/json');
-    return $return;
+$app->get('/api/logout', function (Request $request, Response $response, $args) {
+    unset($_SESSION['isLoggedIn']);
+    session_regenerate_id();
+    
+    // You wouldn't typically redirect to the dashboard, just doing it to prove we are logged out!
+    // After redirecting to the dashboard, the middleware will detect the user is not logged in
+    // and then redirect to 'home'
+    return $response->withRedirect($this->router->pathFor('homeUsers'));
 });
 
 function generate_password($password) {
