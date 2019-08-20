@@ -45,6 +45,22 @@ $app->get('/homeusers', function ($request, $response, $args) {
 })->setName('homeUsers')->add('Auth');
 
 /**
+ *  Pagina para atualização de cadastro
+ */
+$app->get('/api/user/update/{user_id}', function ($request, $response, $args) {
+    $route = $request->getAttribute('route');
+    $user_id = $route->getArgument('user_id');
+    $entityManager = $this->get(EntityManager::class);
+    $usersRepository = $entityManager->getRepository('App\Models\Entity\UserEntity');
+    $user = $usersRepository->find($user_id);
+    $data_nascimento = date_format($user->data_nascimento, "Y-m-d");
+    return $this->renderer->render($response, 'editar.phtml', [
+            'user' => $user,
+            'data_nascimento' => $data_nascimento
+        ]);
+})->setName('userUpdate')->add('Auth');
+
+/**
  * /api/users
  * 
  * Busca e retorna todos usuarios cadastrados no sistema
@@ -72,12 +88,12 @@ $app->get('/api/users', function (Request $request, Response $response, $args) {
  * "rua":"Sem Fim","cidade":"Jurema","estado":"GO","numero":999,"bairro":\
  * "JD Cunha","complemento":""}' localhost:8080/api/registry
  */
-$app->post('/api/registry', function (Request $request, Response $response, $args) {
+$app->post('/api/registry', function ($request, $response, $args) {
     $params = (object) $request->getParams();
     $entityManager = $this->get(EntityManager::class);
     $user = (new UserEntity())->setNome($params->nome)
                     ->setEmail($params->email)
-                    ->setCPF((int)$params->cpf)
+                    ->setCPF($params->cpf)
                     ->setTelefone($params->telefone)
                     ->setDataNascimento(
                         DateTime::createFromFormat(
@@ -86,7 +102,7 @@ $app->post('/api/registry', function (Request $request, Response $response, $arg
                     )
                     ->setSenha(generate_password($params->senha))
                     ->setRua($params->rua)
-                    ->setNumero($params->numero)
+                    ->setNumero((int)$params->numero)
                     ->setBairro($params->bairro)
                     ->setCidade($params->cidade)
                     ->setEstado($params->estado)
@@ -98,9 +114,18 @@ $app->post('/api/registry', function (Request $request, Response $response, $arg
         $entityManager->persist($user);
         $entityManager->flush();
     } catch (Exception $e) {
-        throw new \Exception("Falha ao registrar o novo usuario!", 400);
+        return $this->renderer->render($response, 'mensage.phtml', [
+            'error' => true,
+            'url_for' => '/',
+            'mensage' => "Falha ao registrar o novo usuario! :("
+        ]);
+        //throw new \Exception("Falha ao registrar o novo usuario!\n\n".var_dump($e), 400);
     }
-    return $response->withRedirect($this->router->pathFor('home'), 200);
+    return $this->renderer->render($response, 'mensage.phtml', [
+        'error' => false,
+        'url_for' => '/',
+        'mensage' => "Usuário cadastrado com sucesso!"
+    ]);
 });
 
 /**
@@ -123,7 +148,7 @@ $app->get('/api/user/{user_id}', function (Request $request, Response $response)
         ['status' => 'success', 'user' => $user], 200
     )->withHeader('Content-type', 'application/json');
     return $return;
-});
+})->setName('getOneUser')->add('Auth');
 
 /**
  * /api/user/{user_id}
@@ -132,13 +157,13 @@ $app->get('/api/user/{user_id}', function (Request $request, Response $response)
  * 
  * Valida se usuário existe e atualiza os dados caso exista
  * 
- * @request curl -X PUT -H "Content-Type: application/json" \
+ * @request curl -X POST -H "Content-Type: application/json" \
  * -d '{"nome":"Andre Xavier","cpf":"1234567890","telefone":"62999999999",\
  * "email":"andre@examplecoorp.com","data_nascimento":"1986-05-05","senha":"@admin",\
  * "rua":"Sem Fim","cidade":"Jurema","estado":"GO","numero":999,"bairro":\
  * "JD Cunha","complemento":""}' localhost:8080/api/user/1
  */
-$app->put('/api/user/{user_id}', function (Request $request, Response $response) use ($app) {
+$app->post('/api/user/{user_id}', function (Request $request, Response $response, $args) {
     $params = (object) $request->getParams();
     $route = $request->getAttribute('route');
     $user_id = $route->getArgument('user_id');
@@ -153,7 +178,7 @@ $app->put('/api/user/{user_id}', function (Request $request, Response $response)
      */
     $user->setNome($params->nome)
         ->setEmail($params->email)
-        ->setCPF((int)$params->cpf)
+        ->setCPF($params->cpf)
         ->setTelefone($params->telefone)
         ->setDataNascimento(
             DateTime::createFromFormat(
@@ -167,25 +192,28 @@ $app->put('/api/user/{user_id}', function (Request $request, Response $response)
         ->setCidade($params->cidade)
         ->setEstado($params->estado)
         ->setComplemento($params->complemento);
-        try {
-            $entityManager->persist($user);
-            $entityManager->flush();
-        } catch (Exception $e) {
-            throw new \Exception([
-                'status' => 'fail',
-                'user_id' => $user_id, 
-                'message' => "Falha ao atualizar o usuario!"
-            ], 400);
-        }
-        $return = $response->withJson(
-            [
-              'status' => 'success', 
-              'user_id' => $user_id, 
-              'message' => 'User atualizado!'
-            ], 200
-        )->withHeader('Content-type', 'application/json');
-        return $return;
-});
+    try {
+        $entityManager->persist($user);
+        $entityManager->flush();
+    } catch (Exception $e) {
+        return $this->renderer->render($response, 'mensage.phtml', [
+            'error' => true,
+            'url_for' => '/homeusers',
+            'mensage' => "Falha ao Atualizar o usuario! :("
+        ]);
+            // throw new \Exception([
+            //     'status' => 'fail',
+            //     'user_id' => $user_id, 
+            //     'message' => "Falha ao atualizar o usuario!"
+            // ], 400);
+    }
+    return $this->renderer->render($response, 'mensage.phtml', [
+        'error' => false,
+        'url_for' => '/homeusers',
+        'mensage' => "Registro realizado com sucesso! :)"
+    ]);
+    //return $response->withRedirect($this->router->pathFor('homeUsers'), 201);
+})->setName('updateOneUser')->add('Auth');
 
 /**
  * /api/login

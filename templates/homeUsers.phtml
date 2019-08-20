@@ -23,7 +23,6 @@
                 </tr>
             </thead>
             <tbody>
-            <?= $content; ?>
             <?php if(!empty($users)) : ?>
             <?php foreach ($users as $user): ?>
                 <tr>
@@ -32,7 +31,6 @@
                     <td><?= $user->cpf ?></td>
                     <td><?= $user->email ?></td>
                     <td><a href="/api/user/update/<?= $user->user_id ?>"><button type="button" class="btn btn-outline-danger btn-sm"/>Atualizar</button></a></td>
-                    <td><a href="/api/user/delete/<?= $user->user_id ?>"><button type="button" class="btn btn-outline-danger btn-sm"/>Excluir</button></a></td>
                 </tr>
             <?php endforeach; ?>
             <?php endif; ?>
