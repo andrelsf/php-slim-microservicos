@@ -1,2 +1,2 @@
 vendor
-mysql/.env
+data/cache/doctrine
